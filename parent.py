@@ -8,10 +8,12 @@ import pandas as pd
 
 import re # string regular expressions
 
-import my
-
 import xlsxwriter
 import dose_vol_hist as dvh
+
+## List of bits of an integer starting from the least significant
+def bitlist(n):
+    return [1 if digit=='1' else 0 for digit in reversed(bin(n)[2:])]
 
 ## Read the m-file defining information about imrt data
 def read_mfile(f):
@@ -65,7 +67,7 @@ def read_mfile(f):
     dic["roicodes"]=[0 for i in range(dic["nroi"])]
     for i in range(dic["nroi"]):
         l=f.readline().strip("\n").split(maxsplit=1)
-        dic["roicodes"][i]=len(my.bitlist(int(l[0])))-1
+        dic["roicodes"][i]=len(bitlist(int(l[0])))-1
         dic["roinames"][i]=l[1]
     return dic
 
@@ -136,7 +138,7 @@ class Patient:
         self.roivox=[[] for i in range(self.nroi)]
         # codes of voxels -> voxel lists for ROIs 
         for i,v in enumerate(vv):
-            for j,b in enumerate(my.bitlist(v)):
+            for j,b in enumerate(bitlist(v)):
                 if b==1:
                     self.roivox[j].append(i)
     ## reads a solution from txt results of Gurobi, returns a vector
@@ -335,7 +337,7 @@ if __name__=="__main__":
 #            # go through indices of intersection with voxels 
 #            # (nonzero elements of the beamlet-related column)
 #            for j in p.d.getcol(b0+i).nonzero()[0]:
-#                for bj,b in enumerate(my.bitlist(p.voxcodes[j])):
+#                for bj,b in enumerate(bitlist(p.voxcodes[j])):
 #                    if b>0:
 #                        bitl[bj]=1
 #            # put beamlet nr to the list corresponding to its ROIs combination
@@ -352,7 +354,7 @@ if __name__=="__main__":
 #                    # logging information
 #                    sout=", ".join([
 #                         p.roinames[j] for j,b in 
-#                             enumerate(my.bitlist(i)) if b>0
+#                             enumerate(bitlist(i)) if b>0
 #                            ])+": "+str(len(l))
 #                    flog.write(sout+"\n")
 #                    print(sout)
